@@ -9,19 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Install SSH key
-      uses: webfactory/ssh-agent@v0.7.0
       with:
-        ssh-private-key: ${{ secrets.ALT_LINUX_SSH_KEY }}
-        
+        submodules: false  # Отключаем submodules
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.7.0  # Правильное имя action
+      with:
+        ssh-private-key: ${{ secrets.ALT_LINUX_SSH_KEY }}  # Проверьте имя секрета
+
     - name: Deploy to ALT Linux
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.ALT_LINUX_USER }}@${{ secrets.ALT_LINUX_IP }} "
-          mkdir -p ~/nginx-docker-project &&
           cd ~/nginx-docker-project &&
-          git fetch origin main &&
-          git reset --hard origin/main &&
+          git pull origin main &&
           docker-compose down || true &&
           docker-compose up -d --build
         "
